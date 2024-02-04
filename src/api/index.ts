@@ -30,7 +30,6 @@ import * as $Notifications from "./Notifications";
 import * as $ServerList from "./ServerList";
 import * as $Settings from "./Settings";
 import * as $Styles from "./Styles";
-import * as $NetworkHooking from "./NetworkHooking";
 
 /**
  * An API allowing you to listen to Message Clicks or run your own logic
@@ -105,11 +104,3 @@ export const Notifications = $Notifications;
  * An API allowing you to patch and add/remove items to/from context menus
  */
 export const ContextMenu = $ContextMenu;
-
-/**
- * An API allowing you to intercept network requests
- */
-export const NetworkHooking = $NetworkHooking;
-setTimeout(() => {
-    $NetworkHooking.initialize();
-}, 3000);
