@@ -588,7 +588,7 @@ export const Devs = /* #__PURE__*/ Object.freeze({
     Pixeluted: {
         name: "Pixeluted",
         id: 1057760003701882890n,
-    }
+    },
     samsam: {
         name: "samsam",
         id: 836452332387565589n,
