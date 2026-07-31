@@ -60,6 +60,7 @@ jobs:
               run: |
                   export PATH="$PWD/node_modules/.bin:$PATH"
                   export CHROMIUM_BIN=/usr/bin/google-chrome
+                  export TIME_PATCHES="${{ inputs.time_patches == true }}"
 
                   esbuild scripts/generateReport.ts > dist/report.mjs
 

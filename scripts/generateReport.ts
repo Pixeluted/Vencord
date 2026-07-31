@@ -21,7 +21,7 @@
 
 import { createHmac } from "crypto";
 import { readFileSync } from "fs";
-import pup, { JSHandle } from "puppeteer-core";
+import pup, { type JSHandle } from "puppeteer-core";
 
 const logStderr = (...data: any[]) => console.error(`${CANARY ? "CANARY" : "STABLE"} ---`, ...data);
 
@@ -33,6 +33,8 @@ for (const variable of ["CHROMIUM_BIN"]) {
 }
 
 const CANARY = process.env.USE_CANARY === "true";
+const TIME_PATCHES = process.env.TIME_PATCHES === "true";
+
 let metaData = {
     buildNumber: "Unknown Build Number",
     buildHash: "Unknown Build Hash"
@@ -45,7 +47,7 @@ const browser = await pup.launch({
 });
 
 const page = await browser.newPage();
-await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36");
+await page.setUserAgent({ userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36" });
 await page.setBypassCSP(true);
 
 async function maybeGetError(handle: JSHandle): Promise<string | undefined> {
@@ -75,12 +77,6 @@ const report = {
 };
 
 const IGNORED_DISCORD_ERRORS = [
-    "KeybindStore: Looking for callback action",
-    "Unable to process domain list delta: Client revision number is null",
-    "Downloading the full bad domains file",
-    /\[GatewaySocket\].{0,110}Cannot access '/,
-    "search for 'name' in undefined",
-    "Attempting to set fast connect zstd when unsupported"
 ] as Array<string | RegExp>;
 
 function toCodeBlock(s: string, indentation = 0, isDiscord = false) {
@@ -266,6 +262,8 @@ page.on("console", async e => {
                 const patchSlowMatch = message.match(/Patch by (.+?) (took [\d.]+?ms) \(Module id is (.+?)\): (.+)/);
                 const match = patchFailMatch ?? patchSlowMatch;
                 if (!match) break;
+
+                if (patchSlowMatch && !TIME_PATCHES) break;
 
                 logStderr(await getText());
                 process.exitCode = 1;
